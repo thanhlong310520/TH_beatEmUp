@@ -21,5 +21,10 @@ public class InputManager : MyMonoBehaviour
     {
         return Input.GetAxis("Horizontal");
     }
-
+    public bool InputPlayerHit()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
+            return true;
+        return false;
+    }
 }

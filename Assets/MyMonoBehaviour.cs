@@ -7,6 +7,7 @@ public class MyMonoBehaviour : MonoBehaviour
     protected virtual void Reset()
     {
         LoadComponents();
+        ResetValues();
     }
     protected virtual void OnEnable()
     {

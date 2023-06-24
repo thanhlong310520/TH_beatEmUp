@@ -7,9 +7,9 @@ public class PlayerMovement : MyMonoBehaviour
 {
     [SerializeField] protected float speed;
     [SerializeField] protected float direction = 1;
-    [SerializeField] protected Transform model;
+    [SerializeField] protected PlayerCtrl playerCtrl;
     float move;
-    [SerializeField]float inpDirection = 1;
+    float inpDirection = 1;
     [SerializeField] bool canFlip;
     [SerializeField] bool canMove;
     protected override void Start()
@@ -22,14 +22,18 @@ public class PlayerMovement : MyMonoBehaviour
     protected override void LoadComponents()
     {
         base.LoadComponents();
-        LoadModel();
+        LoadPlayerCtrl();
+    }
+    protected override void ResetValues()
+    {
+        base.ResetValues();
+        speed = 2f;
     }
 
-    protected virtual void LoadModel()
+    protected virtual void LoadPlayerCtrl()
     {
-        if (model != null) return;
-        model = transform.parent.Find("Model");
-        Debug.Log("load model " + model);
+        if (playerCtrl != null) return;
+        playerCtrl = transform.parent.GetComponentInChildren<PlayerCtrl>();
     }
 
     protected override void Update()
@@ -37,27 +41,37 @@ public class PlayerMovement : MyMonoBehaviour
         base.Update();
         GetInput();
         CheckFlip();
+        UpdateAnimation();
     }
+
+    protected virtual void UpdateAnimation()
+    {
+        playerCtrl.ModelAnim.SetFloat("velocityX", Mathf.Abs(move));
+    }
+
     private void FixedUpdate()
     {
         Movement();
     }
     protected virtual void Movement()
     {
-        if ( move != 0)
+        if (canMove)
         {
-            Vector3 pos = transform.parent.position;
-            pos.x += move * speed * Time.deltaTime;
-            transform.parent.position = pos;
-            
+            if (move != 0)
+            {
+                Vector3 pos = transform.parent.position;
+                pos.x += move * speed * Time.deltaTime;
+                transform.parent.position = pos;
+
+            }
         }
     }
 
     protected virtual void Flip()
     {
-        Vector3 setScale = model.transform.localScale;
+        Vector3 setScale = transform.parent.localScale;
         setScale.x *= -1;
-        model.transform.localScale = setScale;
+        transform.parent.localScale = setScale;
         direction *= -1;
     }
     protected virtual void GetInput()
@@ -81,5 +95,10 @@ public class PlayerMovement : MyMonoBehaviour
                 Flip();
             }
         }
+    }
+    public void UpdateCan(bool val)
+    {
+        canMove = val;
+        canFlip = val;
     }
 }
